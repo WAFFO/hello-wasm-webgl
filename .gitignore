@@ -3,3 +3,6 @@ webgl.js
 webgl_bg.js
 webgl_bg.wasm
 .idea
+target
+www/wasm/*
+www/node_modules/*

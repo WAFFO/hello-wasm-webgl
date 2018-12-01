@@ -1,5 +1,5 @@
 [package]
-name = "webgl"
+name = "hello-webgl"
 version = "0.1.0"
 authors = ["The wasm-bindgen Developers"]
 
