@@ -1,17 +1,15 @@
-# WebGL Example
+# WASM WebGL Example
 
-[View documentation for this example online][dox] or [View compiled example
-online][compiled]
-
-[compiled]: https://rustwasm.github.io/wasm-bindgen/exbuild/webgl/
-[dox]: https://rustwasm.github.io/wasm-bindgen/examples/webgl.html
-
-You can build the example locally with:
+Build with:
 
 ```
 $ ./build.sh
 ```
 
-(or running the commands on Windows manually)
+Start server with:
 
-and then visiting http://localhost:8080 in a browser should run the example!
+```
+$ ./start_server.sh
+```
+
+and then visiting http://localhost:8080 in your browser!
