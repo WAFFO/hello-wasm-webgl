@@ -1,14 +1,14 @@
 # WASM WebGL Example
 
-Structured to be as simple as possible to get started.
+Structured to be as simple as possible to get started. Requires [npm](https://nodejs.org/en/).
 
-Build with:
+First, build with:
 
 ```
 $ ./build.sh
 ```
 
-Start server with:
+Then, start server with:
 
 ```
 $ ./start_server.sh
