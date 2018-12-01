@@ -1,5 +1,7 @@
 # WASM WebGL Example
 
+Structured to be as simple as possible to get started.
+
 Build with:
 
 ```
