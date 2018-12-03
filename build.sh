@@ -3,6 +3,8 @@
 set -ex
 cd "$(dirname $0)"
 
+rustup target add wasm32-unknown-unknown --toolchain stable
+
 if ( ! command -v wasm-bindgen )
 then
     cargo install wasm-bindgen-cli
