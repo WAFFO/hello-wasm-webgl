@@ -14,4 +14,4 @@ Then, start server with:
 $ ./start_server.sh
 ```
 
-and then visiting http://localhost:8080 in your browser!
+and then visit http://localhost:8080 in your browser! Simple as that!
