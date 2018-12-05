@@ -8,6 +8,11 @@ use wasm_bindgen::JsCast;
 use web_sys::{WebGlProgram, WebGlRenderingContext, WebGlShader};
 
 #[wasm_bindgen]
+pub fn init() -> Result<(), JsValue> {
+    Ok(())
+}
+
+#[wasm_bindgen]
 pub fn draw() -> Result<(), JsValue> {
     let document = web_sys::window().unwrap().document().unwrap();
     let canvas = document.get_element_by_id("canvas").unwrap();
@@ -31,27 +36,36 @@ pub fn draw() -> Result<(), JsValue> {
     let program = link_program(&context, [vert_shader, frag_shader].iter())?;
     context.use_program(Some(&program));
 
+    // set the vertices of our shape
     let vertices: [f32; 9] = [-0.7, -0.7, 0.0, 0.7, -0.7, 0.0, 0.0, 0.7, 0.0];
+    // get the buffer out of WebAssembly memory
     let memory_buffer = wasm_bindgen::memory()
         .dyn_into::<WebAssembly::Memory>()?
         .buffer();
+    // figure out where the vertices are in the memory_buffer (convert pointer to index)
     let vertices_location = vertices.as_ptr() as u32 / 4;
     let vert_array = js_sys::Float32Array::new(&memory_buffer)
         .subarray(vertices_location, vertices_location + vertices.len() as u32);
 
-    let buffer = context.create_buffer().ok_or("failed to create buffer")?;
+    // attributes in shaders come from buffers, first get the buffer
+    let buffer = context.create_buffer().ok_or("failed to create a buffer")?;
     context.bind_buffer(WebGlRenderingContext::ARRAY_BUFFER, Some(&buffer));
+    // buffer_data will copy the data to the GPU memory
     context.buffer_data_with_array_buffer_view(
         WebGlRenderingContext::ARRAY_BUFFER,
         &vert_array,
         WebGlRenderingContext::STATIC_DRAW,
     );
+    // bind buffer to generic vertex attribute of the current vertex buffer object
     context.vertex_attrib_pointer_with_i32(0, 3, WebGlRenderingContext::FLOAT, false, 0, 0);
-    context.enable_vertex_attrib_array(0);
+    // attributes need to be enabled before use (could just use 0 since we know it's first)
+    context.enable_vertex_attrib_array(context.get_attrib_location(&program, "position") as u32);
 
-    context.clear_color(1.0, 0.0, 0.0, 1.0);
+    // draw over the entire canvas and clear buffer to ur present one
+    context.clear_color(0.1, 0.1, 0.1, 1.0);
     context.clear(WebGlRenderingContext::COLOR_BUFFER_BIT);
 
+    // draw our shape (Triangles, offset, count) Our vertex shader will run <count> times.
     context.draw_arrays(
         WebGlRenderingContext::TRIANGLES,
         0,
@@ -60,10 +74,7 @@ pub fn draw() -> Result<(), JsValue> {
     Ok(())
 }
 
-pub fn compile_shader(
-    context: &WebGlRenderingContext,
-    shader_type: u32,
-    source: &str,
+pub fn compile_shader( context: &WebGlRenderingContext, shader_type: u32, source: &str
 ) -> Result<WebGlShader, String> {
     let shader = context
         .create_shader(shader_type)
@@ -84,10 +95,9 @@ pub fn compile_shader(
     }
 }
 
-pub fn link_program<'a, T: IntoIterator<Item = &'a WebGlShader>>(
-    context: &WebGlRenderingContext,
-    shaders: T,
-) -> Result<WebGlProgram, String> {
+pub fn link_program<'a, T>( context: &WebGlRenderingContext, shaders: T
+) -> Result<WebGlProgram, String>
+where T: IntoIterator<Item = &'a WebGlShader> {
     let program = context
         .create_program()
         .ok_or_else(|| String::from("Unable to create shader object"))?;
