@@ -10,6 +10,7 @@ use web_sys::{WebGlProgram, WebGlRenderingContext, WebGlShader};
 #[wasm_bindgen]
 pub struct RustGL {
     context: web_sys::WebGlRenderingContext,
+    angle: f32,
 }
 
 #[wasm_bindgen]
@@ -52,13 +53,20 @@ impl RustGL {
         context.enable_vertex_attrib_array(context.get_attrib_location(&program, "position") as u32);
 
         // Return our WebGL object
-        Ok( RustGL { context } )
+        Ok( RustGL { context, angle: 0.0 } )
     }
 
     #[wasm_bindgen]
-    pub fn draw(&self) -> Result<(), JsValue> {
+    pub fn draw(&mut self) -> Result<(), JsValue> {
+        use std::f32::consts::PI;
+        let r = ((2.0 * PI) / 3.0) as f32;
+        let a = self.angle;
         // Set the vertices of our shape
-        let vertices: [f32; 9] = [-0.7, -0.7, 0.0, 0.7, -0.7, 0.0, 0.0, 0.7, 0.0];
+        let vertices: [f32; 9] = [
+            a.cos()*0.7, a.sin()*0.7, 0.0,
+            (a+r).cos()*0.7, (a+r).sin()*0.7, 0.0,
+            (a+r*2.0).cos()*0.7, (a+r*2.0).sin()*0.7, 0.0
+        ];
         // Get the buffer out of WebAssembly memory
         let memory_buffer = wasm_bindgen::memory()
             .dyn_into::<WebAssembly::Memory>()?
@@ -85,6 +93,12 @@ impl RustGL {
             0,
             (vertices.len() / 3) as i32,
         );
+
+        self.angle += 0.01;
+        if self.angle > PI * 2.0 {
+            self.angle -= PI * 2.0;
+        }
+
         Ok(())
     }
 }
