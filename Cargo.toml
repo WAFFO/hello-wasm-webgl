@@ -21,4 +21,5 @@ features = [
   'WebGlProgram',
   'WebGlShader',
   'Window',
+  'Performance',
 ]
