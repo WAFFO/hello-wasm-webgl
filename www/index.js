@@ -1,11 +1,11 @@
 (async () => {
     const webGL = await import('./wasm/hello_webgl.js');
 
-    const rustGL = webGL.RustGL.new();
-    rustGL.draw();
+    const Engine = webGL.Engine.new();
+    Engine.tick();
 
     const renderLoop = () => {
-        rustGL.draw();
+        Engine.tick();
         requestAnimationFrame(renderLoop);
     }
 
