@@ -84,7 +84,7 @@ impl RustGL {
         );
 
         // Draw over the entire canvas and clear buffer to ur present one
-        self.context.clear_color(0.0, 0.0, 0.0, 1.0);
+        self.context.clear_color(0.9, 0.9, 0.9, 1.0);
         self.context.clear(WebGlRenderingContext::COLOR_BUFFER_BIT);
 
         // Draw our shape (Triangles, offset, count) Our vertex shader will run <count> times.
