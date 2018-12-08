@@ -1,13 +1,11 @@
 use js_sys::WebAssembly;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
-use web_sys::{WebGlProgram, WebGlRenderingContext, WebGlShader, Performance};
+use web_sys::{WebGlProgram, WebGlRenderingContext, WebGlShader};
 
 pub struct Renderer {
     context: web_sys::WebGlRenderingContext,
     angle: f32,
-    performance: Performance,
-    last_frame: f64,
 }
 
 impl Renderer {
@@ -47,21 +45,16 @@ impl Renderer {
         // Attributes need to be enabled before use (could just use 0 since we know it's first)
         context.enable_vertex_attrib_array(context.get_attrib_location(&program, "position") as u32);
 
-        let performance = web_sys::window().unwrap().performance().unwrap();
-        let last_frame = performance.now();
-
         // Return our WebGL object
         Ok(Renderer {
             context,
             angle: 0.0,
-            performance,
-            last_frame,
         })
     }
 
-    pub fn draw(&mut self) -> Result<(), JsValue> {
+    pub fn draw(&mut self, delta_time: f64) -> Result<(), JsValue> {
         // get delta_time
-        let delta_time: f32 = self.get_delta() as f32;
+        let delta_time: f32 = delta_time as f32;
 
         use std::f32::consts::PI;
         let r = ((2.0 * PI) / 3.0) as f32;
@@ -152,12 +145,5 @@ impl Renderer {
                 .get_program_info_log(&program)
                 .unwrap_or_else(|| "Unknown error creating program object".into()))
         }
-    }
-
-    fn get_delta(&mut self) -> f64 {
-        let temp: f64 = self.performance.now();
-        let d: f64 = temp - self.last_frame;
-        self.last_frame = temp;
-        d / 1_000.0
     }
 }
