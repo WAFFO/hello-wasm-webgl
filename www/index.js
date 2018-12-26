@@ -1,13 +1,3 @@
-(async () => {
-    const webGL = await import('./wasm/hello_webgl.js');
-
-    const Engine = webGL.Engine.new();
-    Engine.tick();
-
-    const renderLoop = () => {
-        Engine.tick();
-        requestAnimationFrame(renderLoop);
-    }
-
-    requestAnimationFrame(renderLoop);
-})();
+import('./wasm/hello_webgl.js')
+  .then(webgl => webgl.run())
+  .catch(console.error);
