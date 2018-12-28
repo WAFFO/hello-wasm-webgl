@@ -7,6 +7,7 @@ use std::cell::RefCell;
 use std::rc::Rc;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
+use std::panic;
 
 // My stuff
 pub mod engine_mod;
@@ -30,6 +31,9 @@ fn request_animation_frame(f: &Closure<FnMut()>) {
 // MAIN
 #[wasm_bindgen]
 pub fn run() -> Result<(), JsValue> {
+    // hook panics to the console
+    panic::set_hook(Box::new(console_error_panic_hook::hook));
+
     let mut engine = Engine::new()?;
 
     let f = Rc::new(RefCell::new(None));
@@ -37,7 +41,7 @@ pub fn run() -> Result<(), JsValue> {
 
     *g.borrow_mut() = Some(Closure::wrap(Box::new(move || {
 
-        engine.tick();
+        engine.tick().expect("failed to tick engine");;
 
         // Schedule ourselves for another requestAnimationFrame callback.
         request_animation_frame(f.borrow().as_ref().unwrap());

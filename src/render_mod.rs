@@ -3,9 +3,10 @@ use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use web_sys::{WebGlProgram, WebGlRenderingContext, WebGlShader};
 
+use engine_mod::triangle_mod::Triangle;
+
 pub struct Renderer {
     context: web_sys::WebGlRenderingContext,
-    angle: f32,
 }
 
 impl Renderer {
@@ -48,23 +49,13 @@ impl Renderer {
         // Return our WebGL object
         Ok(Renderer {
             context,
-            angle: 0.0,
         })
     }
 
-    pub fn draw(&mut self, delta_time: f64) -> Result<(), JsValue> {
-        // get delta_time
-        let delta_time: f32 = delta_time as f32;
+    pub fn draw(&mut self, triangle: &Triangle) -> Result<(), JsValue> {
 
-        use std::f32::consts::PI;
-        let r = ((2.0 * PI) / 3.0) as f32;
-        let a = self.angle;
-        // Set the vertices of our shape
-        let vertices: [f32; 9] = [
-            a.cos() * 0.7, a.sin() * 0.7, 0.0,
-            (a + r).cos() * 0.7, (a + r).sin() * 0.7, 0.0,
-            (a + r * 2.0).cos() * 0.7, (a + r * 2.0).sin() * 0.7, 0.0
-        ];
+        let vertices = triangle.get_vertices();
+
         // Get the buffer out of WebAssembly memory
         let memory_buffer = wasm_bindgen::memory()
             .dyn_into::<WebAssembly::Memory>()?
@@ -91,11 +82,6 @@ impl Renderer {
             0,
             (vertices.len() / 3) as i32,
         );
-
-        self.angle += 1.2 * delta_time;
-        if self.angle > PI * 2.0 {
-            self.angle -= PI * 2.0;
-        }
 
         Ok(())
     }
