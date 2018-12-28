@@ -1,9 +1,4 @@
-extern crate wasm_bindgen;
-extern crate js_sys;
-extern crate web_sys;
-
 use wasm_bindgen::prelude::*;
-use wasm_bindgen::JsCast;
 
 pub mod triangle_mod;
 
